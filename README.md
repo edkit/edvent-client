@@ -1,15 +1,17 @@
 ## About
 
-bootplate is a template for a minimal Enyo and Onyx web application.
-You would normally use this to setup your local environment then go and modify the
-files to build your own application.  By itself, it does almost nothing.
+edVent is a visualization tool that helps debugging state machines and event
+based software. It is based on enyojs and d3js. Load a dump of yours events
+formatted as a json array and you can easily see what happened.
 
-## Downloading
 
-To download a version of bootplate with all of the submodules populated
-for quick use, visit http://enyojs.com/get-enyo/.  The download link in GitHub will
-give you just the bootplate repo without any of the supporting libraries.
+## Json input format
 
-As an alternative, you can use a Git client to clone this repo and then initialize
-submodules. This is good if you want to work with the latest version of the code from
-GitHub that we may not have packaged into an official release.
+Example:
+
+    [
+        { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : {} },
+        { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state2", "data" : {} },
+        { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
+    ]
+
