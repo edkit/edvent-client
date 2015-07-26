@@ -9,15 +9,28 @@ enyo.kind({
 	kind: "FittableRows",
 	fit: true,
 	components:[
-		{kind: "onyx.Toolbar", content: "Hello World"},
-		{kind: "enyo.Scroller", fit: true, components: [
-			{name: "main", classes: "nice-padding", allowHtml: true}
-		]},
 		{kind: "onyx.Toolbar", components: [
-			{kind: "onyx.Button", content: "Tap me", ontap: "helloWorldTap"}
+            {kind:"enyo.FileInputDecorator", onSelect:"customSelected", components:[
+                {kind: "onyx.IconButton", src:"assets/open.png"}
+            ]}
+        ]},
+		{kind: "enyo.Scroller", fit: true, components: [
+			{kind: "edvent.EventPlot", name: "plot"}
 		]}
 	],
-	helloWorldTap: function(inSender, inEvent) {
-		this.$.main.addContent("The button was tapped.<br/>");
-	}
+    customSelected: function(inSender, inEvent) {
+        var file = inEvent.files[0];
+        var reader = new FileReader();
+
+        reader.onload = enyo.bind(this, "fileLoaded");
+        reader.readAsText(file);
+
+	},
+
+    fileLoaded: function(e) {
+        data = JSON.parse(e.target.result);
+        this.$.plot.setData(data);
+        this.$.plot.plot();
+    }
+
 });

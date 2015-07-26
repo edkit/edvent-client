@@ -1,0 +1,32 @@
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+div.tooltip {
+  position: absolute;	
+  text-align: center;	
+  width: 30ex;	
+  height: 5em;		
+  padding: 2px;	
+  font: 12px sans-serif;	
+  background: lightsteelblue;	
+  border: 1px;					
+  border-radius: 8px;
+ /*  pointer-events: none;	This line needs to be removed */
+}
+
+.dot {
+    fill: #fff;
+    stroke: darkgray;
+    stroke-width: 2px;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
