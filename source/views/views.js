@@ -10,6 +10,7 @@ enyo.kind({
 	fit: true,
 	components:[
 		{kind: "onyx.Toolbar", components: [
+            {name: "errorPopup", kind: "onyx.Popup", centered: true, floating: true, classes:"onyx-sample-popup", style: "padding: 10px;"},
             {kind:"enyo.FileInputDecorator", onSelect:"customSelected", components:[
                 {kind: "onyx.IconButton", src:"assets/open.png"}
             ]}
@@ -28,7 +29,17 @@ enyo.kind({
 	},
 
     fileLoaded: function(e) {
-        data = JSON.parse(e.target.result);
+        var data;
+        try {
+            data = JSON.parse(e.target.result);
+        }
+        catch(e) {
+            console.log(e);
+            this.$.errorPopup.setContent(e);
+            this.$.errorPopup.show();
+            return;
+        }
+
         this.$.plot.setData(data);
         this.$.plot.plot();
     }
