@@ -29,8 +29,6 @@ enyo.kind({
             .orient("bottom");
 
         var yAxis = function(datum, index) {
-            console.log("foo");
-
             var axis = d3.svg.axis()
                 .scale(yList[index])
                 .orient("left");
@@ -46,11 +44,12 @@ enyo.kind({
             .attr("class", "tooltip")
             .style("opacity", 0.1);
 
-            data = this.data;
-            var index=0;
-            data.forEach(function(d) {
-                d.index = index++;
-            });
+        // data
+        data = this.data;
+        var index=0;
+        data.forEach(function(d) {
+            d.index = index++;
+        });
 
         var class_list = d3.nest()
           .key(function(d) { return d.class; })
@@ -72,7 +71,11 @@ enyo.kind({
             );
 
             // one height per class
-            heightList[index] = colorList[index].domain().length * 40;
+            var eventList = d3.nest()
+                .key(function(d) { return d.evt; })
+                .entries(s.values);
+
+            heightList[index] = eventList.length * 20;
 
             // one y domain per class
             yList[index] = d3.scale.ordinal();
@@ -134,8 +137,9 @@ enyo.kind({
                 .style("opacity", .9);	
 
             div.html("timestamp: " + d.t + "<br/>" +
-                    "event: " + d.evt + "<br/>") 
-                .style("left", (d3.event.pageX) + "px")			 
+                    "event: " + d.evt + "<br/>" +
+                    "data: " + d.data.replace(",", "<br/>") + "<br/>")
+                .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
             });
 
@@ -164,7 +168,7 @@ enyo.kind({
 
         object.append("path")
             .attr("class", "line")
-            .attr("d", function(d) { console.log(d); return line(d.values); })
+            .attr("d", function(d) { return line(d.values); })
             .style("stroke", function(d) { 
                     return colorList[d.class_index](d.obj); 
                     });
