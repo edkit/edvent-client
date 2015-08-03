@@ -129,10 +129,6 @@ enyo.kind({
             // Tooltip stuff after this
         .on("mouseover", function(d) {
             div.transition()
-                .duration(500)	
-                .style("opacity", 0);
-
-            div.transition()
                 .duration(200)	
                 .style("opacity", .9);	
 
@@ -141,7 +137,7 @@ enyo.kind({
                     "data: " + d.data.replace(",", "<br/>") + "<br/>")
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
-            });
+            })
 
         // lines
         var line = d3.svg.line()
