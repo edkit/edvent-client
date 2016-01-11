@@ -1,6 +1,6 @@
 /**
-	For simple applications, you might define all of your views in this file.  
-	For more complex applications, you might choose to separate these kind definitions 
+	For simple applications, you might define all of your views in this file.
+	For more complex applications, you might choose to separate these kind definitions
 	into multiple files under this folder.
 */
 
@@ -15,10 +15,18 @@ enyo.kind({
                 {kind: "onyx.IconButton", src:"assets/open.png"}
             ]}
         ]},
-		{kind: "enyo.Scroller", fit: true, components: [
-			{kind: "edvent.EventPlot", name: "plot"}
+		{
+			kind: 'FittableColumns', fit: true, components: [
+				{ kind:"edvent.InfoView", name:"infoView", style:"width:20ex"},
+				{kind: "enyo.Scroller", fit: true, components: [
+					{kind: "edvent.EventPlot", name: "plot"}
+				]}
 		]}
 	],
+	create: function() {
+        this.inherited(arguments);
+        this.$.plot.setTooltipListener(enyo.bind(this.$.infoView, "setTo"));
+    },
     customSelected: function(inSender, inEvent) {
         var file = inEvent.files[0];
         var reader = new FileReader();

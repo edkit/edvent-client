@@ -1,19 +1,19 @@
 [
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state2", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state2", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : "" },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state5", "data" : "" },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : {"key1": 3} },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state2", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state2", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state5", "data" : {} },
 
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state1", "data" : "" },
-    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state2", "data" : "" },
-    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state3", "data" : "" },
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state2", "data" : "" },
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state5", "data" : "" }
+    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state1", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state2", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state3", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state2", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state5", "data" : {} }
 
 ]

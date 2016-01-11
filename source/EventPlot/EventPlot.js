@@ -5,6 +5,7 @@ enyo.kind({
 
     published: {
       data: undefined,
+      tooltipListener: undefined,
     },
 
     components : [
@@ -17,8 +18,8 @@ enyo.kind({
         var offsetTop = this.container.node.offsetTop;
         var offsetLeft = this.container.node.offsetLeft;
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 80};
-        var marginContext = {top: 10, right: 20, bottom: 10, left: 80};
+        var margin = {top: 20, right: 20, bottom: 30, left: 120};
+        var marginContext = {top: 10, right: 20, bottom: 10, left: 120};
         var width = this.container.node.offsetWidth - margin.left - margin.right;
         var height = this.container.node.offsetHeight - margin.top - margin.bottom;
         var contextHeight = 40;
@@ -35,8 +36,7 @@ enyo.kind({
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .tickValues(d3.range(0, this.data.length))
-            .tickFormat(d3.format(",d"))
+            .ticks(0)
             .orient("bottom");
 
         var yAxis = function(datum, index) {
@@ -140,7 +140,7 @@ enyo.kind({
                     return heightList[index] + margin.top + margin.bottom;
                 })
                 .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");  
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         svg.append("defs").append("clipPath")
             .attr("transform", "translate(" + 0 + "," + -7 + ")")
@@ -157,7 +157,7 @@ enyo.kind({
         svg.append("g")
             .attr("clip-path", "url(#clip)")
             .attr("class", "x axis")
-            .attr("transform", function(d, index) { 
+            .attr("transform", function(d, index) {
                     return "translate(0," + heightList[index] + ")";
             })
             .call(xAxis);
@@ -187,17 +187,10 @@ enyo.kind({
                 .style("fill", function(d) { return colorList[d.class_index](d.obj); })
 
         // Tooltip stuff after this
-        .on("mouseover", function(d) {
-            div.transition()
-                .duration(200)	
-                .style("opacity", .9);	
-
-            div.html("timestamp: " + d.t + "<br/>" +
-                    "event: " + d.evt + "<br/>" +
-                    "data: " + d.data.replace(",", "<br/>") + "<br/>")
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-            })
+        .on("mouseover", enyo.bind(this, function(d) {
+            if(this.tooltipListener != undefined)
+                this.tooltipListener(d);
+            }))
 
         // lines
         var line = d3.svg.line()
@@ -226,8 +219,8 @@ enyo.kind({
             .attr("clip-path", "url(#clip)")
             .attr("class", "line")
             .attr("d", function(d) { return line(d.values); })
-            .style("stroke", function(d) { 
-                    return colorList[d.class_index](d.obj); 
+            .style("stroke", function(d) {
+                    return colorList[d.class_index](d.obj);
                     });
 
     }
