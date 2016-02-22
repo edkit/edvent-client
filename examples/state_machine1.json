@@ -1,19 +1,21 @@
 [
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : {"key1": 3} },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state2", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state3", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state2", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "2", "evt" : "state3", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state4", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "obj" : "1", "evt" : "state5", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "link", "data_in" : {"child": 2} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data" : {"key1": 3} },
+    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "1", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "2", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state5", "obj" : "1", "type" : "event", "data" : {} },
 
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state1", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state2", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "obj" : "4", "evt" : "state3", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state2", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "obj" : "3", "evt" : "state5", "data" : {} }
+    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "entry", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "4", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "exit",  "data" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state3", "obj" : "4", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "3", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state5", "obj" : "3", "type" : "event", "data" : {} }
 
 ]

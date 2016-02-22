@@ -12,7 +12,8 @@ enyo.kind({
 			{kind: "onyx.GroupboxHeader", content: "Object"},
 			{name:"cls", content: "", style: "padding: 8px;"},
 			{name:"method", content: "", style: "padding: 8px;"},
-            {name:"object", content: "", style: "padding: 8px;"}
+            {name:"object", content: "", style: "padding: 8px;"},
+			{name:"type", content: "", style: "padding: 8px;"}
 		]},
 		{tag: "br"},
         {kind: "onyx.Groupbox", components: [
@@ -31,8 +32,9 @@ enyo.kind({
     setTo : function(entry) {
         console.log("setTo");
         this.$.cls.setContent(entry.class);
-        this.$.method.setContent(entry.evt);
+        this.$.method.setContent(entry.method);
         this.$.object.setContent(entry.obj);
+		this.$.type.setContent(entry.type);
 
         for(key in entry.data) {
             //this.$.keys.createComponent({content:"Foo", style: "padding: 8px;"});
