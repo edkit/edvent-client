@@ -5,19 +5,6 @@
   shape-rendering: crispEdges;
 }
 
-div.tooltip {
-  position: absolute;	
-  text-align: left;	
-  width: 30ex;	
-  height: 5em;		
-  padding: 2px;	
-  font: 12px sans-serif;	
-  background: lightsteelblue;	
-  border: 1px;					
-  border-radius: 8px;
- /*  pointer-events: none;	This line needs to be removed */
-}
-
 .dot {
     fill: #fff;
     stroke: darkgray;
@@ -38,4 +25,60 @@ div.tooltip {
   stroke: #000;
   fill-opacity: .125;
   shape-rendering: crispEdges;
+}
+
+.d3-tip {
+  line-height: 1;
+  padding: 3px;
+  background: #4c4c4c;
+  color: #fff;
+  border-radius: 5px;
+  pointer-events: none;
+  border: none;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: #4c4c4c;
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Northward tooltips */
+.d3-tip.n:after {
+  content: "\25BC";
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  text-align: center;
+}
+
+/* Eastward tooltips */
+.d3-tip.e:after {
+  content: "\25C0";
+  margin: -4px 0 0 0;
+  top: 50%;
+  left: -8px;
+}
+
+/* Southward tooltips */
+.d3-tip.s:after {
+  content: "\25B2";
+  margin: 0 0 1px 0;
+  top: -8px;
+  left: 0;
+  text-align: center;
+}
+
+/* Westward tooltips */
+.d3-tip.w:after {
+  content: "\25B6";
+  margin: -4px 0 0 -1px;
+  top: 50%;
+  left: 100%;
 }

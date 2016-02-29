@@ -17,7 +17,6 @@ enyo.kind({
         ]},
 		{
 			kind: 'FittableColumns', fit: true, components: [
-				{ kind:"edvent.InfoView", name:"infoView", style:"width:20ex"},
 				{kind: "enyo.Scroller", fit: true, components: [
 					{kind: "edvent.EventPlot", name: "plot"}
 				]}
@@ -25,7 +24,6 @@ enyo.kind({
 	],
 	create: function() {
         this.inherited(arguments);
-        this.$.plot.setTooltipListener(enyo.bind(this.$.infoView, "setTo"));
     },
     customSelected: function(inSender, inEvent) {
         var file = inEvent.files[0];

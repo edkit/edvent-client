@@ -1,0 +1,8 @@
+.edvent-infoview .onyx-groupbox  {
+    border-radius: 0;
+}
+
+.edvent-infoview .onyx-groupbox-header  {
+    border-radius: 0;
+    text-transform: none;
+}

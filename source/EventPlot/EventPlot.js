@@ -4,14 +4,19 @@ enyo.kind({
     kind: enyo.Control,
 
     published: {
-      data: undefined,
-      tooltipListener: undefined,
+      data: undefined
     },
 
     components : [
         { tag : "div", name : "context"},
         { tag : "div", name : "focus"}
     ],
+    tooltipView: undefined,
+
+    create: function() {
+           this.inherited(arguments);
+           this.tooltipView = new edvent.InfoView();
+       },
 
     plot: function() {
 
@@ -47,6 +52,24 @@ enyo.kind({
             d3.select(this)
                 .call(axis);
         };
+
+        tip = d3.tip().attr('class', 'd3-tip')
+            .render( enyo.bind(this, function(node, d) {
+                this.tooltipView.setTo(d);
+                this.tooltipView.renderInto(node);
+            })
+            );
+
+        tip.offset(function(width) {
+            return function(d) {
+                return this.getBoundingClientRect().left > width / 2 ? [0, -10] : [0, 10];
+            }
+            }(width))
+            .direction(function(width) {
+                return function(d) {
+                    return this.getBoundingClientRect().left > width / 2 ? "w" : "e";
+                }
+            }(width));
 
         brushed = function() {
             x.domain(brush.empty() ? x2.domain() : brush.extent());
@@ -142,6 +165,7 @@ enyo.kind({
                 .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        svg.call(tip);
         svg.append("defs").append("clipPath")
             .attr("transform", "translate(" + 0 + "," + -7 + ")")
             .attr("id", "clip")
@@ -174,61 +198,6 @@ enyo.kind({
             .style("text-anchor", "end")
             .text(function(d, index) { return class_list[index].key;});
 
-        // scatter plot
-        var shapes = svg.append("g")
-            .attr("clip-path", "url(#clip)")
-            .selectAll(".dot")
-            .data(function(d) { return d.values; })
-            .enter();
-
-        // events
-        shapes.append("circle")
-            .filter(function(d){ return d.type == "event"; })
-            .attr("class", "dot")
-            .attr("r", 5)
-            .attr("cx", function(d) { return x(d.index); })
-            .attr("cy", function(d) { return yList[d.class_index](d.method); })
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }));
-
-
-        // entry
-        shapes.append("rect")
-            .filter(function(d){ return d.type == "entry"; })
-            .attr("class", "dot")
-            .attr("x", function(d) { return x(d.index) - 5; })
-            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }));
-
-        // exit
-        shapes.append("rect")
-            .filter(function(d){ return d.type == "exit"; })
-            .attr("class", "dot")
-            .attr("transform", function(d) { return "rotate(45 "
-                + Math.round(x(d.index) - 5) + " "
-                + Math.round(yList[d.class_index](d.method) - 5) + ")"})
-            .attr("x", function(d) { return x(d.index) - 5; })
-            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }));
-
         // lines
         var line = d3.svg.line()
             .interpolate("step-after")
@@ -260,6 +229,50 @@ enyo.kind({
                     return colorList[d.class_index](d.obj);
                     });
 
+        // scatter plot
+        var shapes = svg.append("g")
+            .attr("clip-path", "url(#clip)")
+            .selectAll(".dot")
+            .data(function(d) { return d.values; })
+            .enter();
+
+        // events
+        shapes.append("circle")
+            .filter(function(d){ return d.type == "event"; })
+            .attr("class", "dot")
+            .attr("r", 5)
+            .attr("cx", function(d) { return x(d.index); })
+            .attr("cy", function(d) { return yList[d.class_index](d.method); })
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
+
+        // entry
+        shapes.append("rect")
+            .filter(function(d){ return d.type == "entry"; })
+            .attr("class", "dot")
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
+
+        // exit
+        shapes.append("rect")
+            .filter(function(d){ return d.type == "exit"; })
+            .attr("class", "dot")
+            .attr("transform", function(d) { return "rotate(45 "
+                + Math.round(x(d.index) - 5) + " "
+                + Math.round(yList[d.class_index](d.method) - 5) + ")"})
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
     }
 
 

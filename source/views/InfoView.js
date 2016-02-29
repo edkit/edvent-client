@@ -6,22 +6,19 @@
 
 enyo.kind({
 	name: "edvent.InfoView",
-	classes: "onyx",
+	classes: "onyx edvent-infoview",
+
+	published: {
+	  entry: undefined
+	},
+
 	components:[
         {kind: "onyx.Groupbox", components: [
-			{kind: "onyx.GroupboxHeader", content: "Object"},
-			{name:"cls", content: "", style: "padding: 8px;"},
-			{name:"method", content: "", style: "padding: 8px;"},
-            {name:"object", content: "", style: "padding: 8px;"},
-			{name:"type", content: "", style: "padding: 8px;"}
+			{name:"method", kind: "onyx.GroupboxHeader", content: ""},
+			{name:"cls", content: "", style: "padding: 3px;"},
+			{name:"object", content: "", style: "padding: 3px;"},
+			{name:"type", content: "", style: "padding: 3px;"}
 		]},
-		{tag: "br"},
-        {kind: "onyx.Groupbox", components: [
-			{kind: "onyx.GroupboxHeader", content: "Links"},
-			{content: "I'm a group item!", style: "padding: 8px;"},
-			{content: "I'm a group item!", style: "padding: 8px;"}
-		]},
-		{tag: "br"},
         {kind: "onyx.Groupbox", components: [
 			{kind: "onyx.GroupboxHeader", content: "Attributes"},
             {name:"keys", components: [
@@ -29,15 +26,20 @@ enyo.kind({
 		]},
 	],
 
+	entryChanged: function() {
+			this.setTo(this.entry);
+	},
+
     setTo : function(entry) {
-        console.log("setTo");
         this.$.cls.setContent(entry.class);
         this.$.method.setContent(entry.method);
         this.$.object.setContent(entry.obj);
 		this.$.type.setContent(entry.type);
 
+		this.$.keys.destroyComponents();
         for(key in entry.data) {
-            //this.$.keys.createComponent({content:"Foo", style: "padding: 8px;"});
+            this.$.keys.createComponent({content: "" + key + ": " + entry.data[key],
+				style: "padding: 3px;"});
         }
     }
 });
