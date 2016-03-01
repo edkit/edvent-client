@@ -241,10 +241,11 @@ enyo.kind({
 
         svg.append("text")
             .attr("class", "label")
-            .attr("transform", "rotate(-90)")
+            .attr("transform", function(d, index) {
+                    return "translate(5," + heightList[index] + ")";
+            })
             .attr("y", 6)
             .attr("dy", ".71em")
-            .style("text-anchor", "end")
             .text(enyo.bind(this, function(d, index) { return this.classData[index].key;}));
 
         // lines
