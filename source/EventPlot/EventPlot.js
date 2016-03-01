@@ -86,8 +86,8 @@ enyo.kind({
         var offsetTop = this.container.node.offsetTop;
         var offsetLeft = this.container.node.offsetLeft;
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 120};
-        var marginContext = {top: 10, right: 20, bottom: 10, left: 120};
+        var margin = {top: 20, right: 20, bottom: 30, left: 20};
+        var marginContext = {top: 10, right: 20, bottom: 10, left: 20};
         var width = this.container.node.offsetWidth - margin.left - margin.right;
         var height = this.container.node.offsetHeight - margin.top - margin.bottom;
         var contextHeight = 20;
@@ -109,15 +109,6 @@ enyo.kind({
             .scale(this.x)
             .ticks(0)
             .orient("bottom");
-
-        var yAxis = function(datum, index) {
-            var axis = d3.svg.axis()
-                .scale(yList[index])
-                .orient("left");
-
-            d3.select(this)
-                .call(axis);
-        };
 
         // tooltip
         tip = d3.tip().attr('class', 'd3-tip')
@@ -234,10 +225,6 @@ enyo.kind({
                     return "translate(0," + heightList[index] + ")";
             })
             .call(this.xAxis);
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .each(yAxis);
 
         svg.append("text")
             .attr("class", "label")
