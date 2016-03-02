@@ -18,6 +18,80 @@ enyo.kind({
            this.tooltipView = new edvent.InfoView();
        },
 
+    objectList: [],
+    childList: [],
+    eventList: [],
+    filteredData: [],
+
+    dataChanged: function(inOldValue) {
+        var data = this.data;
+        // build object list
+        objectList = [];
+        data.forEach(function(entry) {
+            var obj = {"class": entry.class,
+                "obj": entry.obj};
+            var objExists = objectList.filter(function ( o ) {
+                return o.class === obj.class && o.obj === obj.obj;
+            })[0];
+
+            if(objExists == undefined) {
+                objectList.push(obj);
+            }
+        });
+
+        // build child list
+        /* The current link API considers that the child id is unique in the
+            logs. This must evolve to correctly handled distributed use-cases
+            and non-pointer ids
+        */
+        childList = [];
+        data.forEach(function(entry) {
+            if(entry.type == "link") {
+                var obj = this.objectList.filter(function ( o ) {
+                    return o.class === entry.class && o.obj === entry.obj;
+                })[0];
+
+                var childObj = this.objectList.filter(function ( o ) {
+                    return o.obj === entry.data_in.child;
+                })[0];
+
+                childList.push({
+                    "parent": obj,
+                    "child": childObj
+                });
+            }
+        });
+
+        // todo : build event list
+
+        this.objectList = objectList;
+        this.childList = childList;
+        this.filteredData = this.data;
+    },
+
+    eventIsMemberOf: function(event, obj) {
+        if(event.obj == obj.obj)
+            return true;
+
+        for(index in this.childList) {
+            // there is a parent for the current event
+            if(this.childList[index].parent.obj == event.obj) {
+                if(this.childList[index].child.obj == obj.obj)
+                    return true;
+                if(this.eventIsMemberOf(this.childList[index].child, obj) == true)
+                    return true;
+            }
+            // there is a child for the current event
+            else if(this.childList[index].child.obj == event.obj) {
+                if(this.childList[index].parent.obj == obj.obj)
+                    return true;
+                if(this.eventIsMemberOf(this.childList[index].parent, obj) == true)
+                    return true;
+            }
+        }
+        return false;
+    },
+
     plot: function() {
 
         var offsetTop = this.container.node.offsetTop;
@@ -273,7 +347,18 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide);
-    }
+    },
 
+    filter: function(entry) {
+        var filteredData = [];
+        var me = this;
+        this.data.forEach(function(e) {
+            if(me.eventIsMemberOf(e, entry)) {
+                filteredData.push(e);
+            }
+        });
+
+        this.filteredData = filteredData;
+    }
 
 });
