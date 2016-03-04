@@ -323,7 +323,8 @@ enyo.kind({
             .attr("cy", function(d) { return yList[d.class_index](d.method); })
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
         // entry
         shapes.append("rect")
@@ -335,7 +336,8 @@ enyo.kind({
             .attr("height", 10)
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
         // exit
         shapes.append("rect")
@@ -350,7 +352,8 @@ enyo.kind({
             .attr("height", 10)
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
         this.svg = svg;
         this.x = x;
@@ -400,12 +403,9 @@ enyo.kind({
                 return x(d.index); })
             .attr("cy", function(d) { return yList[d.class_index](d.method); })
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }))
-                .on("click", enyo.bind(this, "filter"));
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
 
         // entry
@@ -417,12 +417,9 @@ enyo.kind({
             .attr("width", 10)
             .attr("height", 10)
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }))
-                .on("click", enyo.bind(this, "filter"));
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
 
         // exit
@@ -437,12 +434,9 @@ enyo.kind({
             .attr("width", 10)
             .attr("height", 10)
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-
-                .on("mouseover", enyo.bind(this, function(d) {
-                    if(this.tooltipListener != undefined)
-                        this.tooltipListener(d);
-                    }))
-                .on("click", enyo.bind(this, "filter"));
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+            .on("click", enyo.bind(this, "filter"));
 
         // lines
         var line = d3.svg.line()
