@@ -21,7 +21,15 @@ enyo.kind({
     objectList: [],
     childList: [],
     eventList: [],
+    classData: [],
     filteredData: [],
+
+    svg: undefined,
+    scatter: undefined,
+    line: undefined,
+    x: undefined,
+    yList: [],
+    colorList: [],
 
     dataChanged: function(inOldValue) {
         var data = this.data;
@@ -67,29 +75,6 @@ enyo.kind({
         this.objectList = objectList;
         this.childList = childList;
         this.filteredData = this.data;
-    },
-
-    eventIsMemberOf: function(event, obj) {
-        if(event.obj == obj.obj)
-            return true;
-
-        for(index in this.childList) {
-            // there is a parent for the current event
-            if(this.childList[index].parent.obj == event.obj) {
-                if(this.childList[index].child.obj == obj.obj)
-                    return true;
-                if(this.eventIsMemberOf(this.childList[index].child, obj) == true)
-                    return true;
-            }
-            // there is a child for the current event
-            else if(this.childList[index].child.obj == event.obj) {
-                if(this.childList[index].parent.obj == obj.obj)
-                    return true;
-                if(this.eventIsMemberOf(this.childList[index].parent, obj) == true)
-                    return true;
-            }
-        }
-        return false;
     },
 
     plot: function() {
@@ -146,11 +131,28 @@ enyo.kind({
             }(width));
 
         brushed = function() {
+            var objects = function(d, index) {
+                return colorList[index].domain().map(function(obj) {
+                    return {
+                        obj: obj,
+                        class_index : index,
+                        values: d.values.filter(function(e) {
+                        return e.obj == obj;
+                        })
+                    };
+                });
+            };
+
             x.domain(brush.empty() ? x2.domain() : brush.extent());
             svg.selectAll(".line")
-                .attr("d", function(d) { return line(d.values); });
+                .data(objects, function(d) {return d.obj})
+                .attr("d", function(d) {
+                      return line(d.values); });
             svg.selectAll(".dot")
-                .data(function(d) { return d.values; })
+                .data(function(d) {
+                    return d.values; },
+                    function(d) {
+                        return d.index;})
                 .attr("r", 5)
                 .attr("cx", function(d) { return x(d.index); })
                 .attr("cy", function(d) { return yList[d.class_index](d.method); })
@@ -162,12 +164,6 @@ enyo.kind({
             .x(x2)
             .on("brush", brushed);
 
-         // tooltips container
-        var div = d3.select("body")
-            .append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0.1);
-
         // data
         data = this.data;
         var index=0;
@@ -175,11 +171,11 @@ enyo.kind({
             d.index = index++;
         });
 
-        var class_list = d3.nest()
+        this.classData = d3.nest()
           .key(function(d) { return d.class; })
           .entries(data);
 
-        class_list.forEach( function(s, index) {
+        this.classData.forEach( function(s, index) {
             s.class_index = index;
             // add class index to each entries
             s.values.forEach(function(e) {
@@ -188,7 +184,9 @@ enyo.kind({
 
             // one color domain per class
             colorList[index] = d3.scale.category10();
-            colorList[index].domain(s.values.filter(function(e, pos) { return s.values.indexOf(e) == pos; })
+            colorList[index].domain(s.values.filter(function(e, pos) {
+                    return s.values.indexOf(e) == pos;
+                })
                 .map(function(e) {
                     return e.obj;
                 })
@@ -230,7 +228,7 @@ enyo.kind({
 
         //plots containers
         var svg = d3.select("#" + this.$.focus.id).selectAll("svg")
-            .data(class_list)
+            .data(this.classData, function(d) {return d.class_index;})
             .enter().append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", function(d, index) {
@@ -270,7 +268,7 @@ enyo.kind({
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(function(d, index) { return class_list[index].key;});
+            .text(enyo.bind(this, function(d, index) { return this.classData[index].key;}));
 
         // lines
         var line = d3.svg.line()
@@ -290,13 +288,16 @@ enyo.kind({
             });
         };
 
-        var object = svg.selectAll(".object")
-            .data(objects)
-            .enter().append("g")
-            .attr("class", "object");
+        this.line = svg.append("g")
+            .attr("class", "object")
+            .attr("clip-path", "url(#clip)");
+
+        var object =
+            this.line.selectAll(".object")
+            .data(objects, function(d) {return d.obj})
+            .enter();
 
         object.append("path")
-            .attr("clip-path", "url(#clip)")
             .attr("class", "line")
             .attr("d", function(d) { return line(d.values); })
             .style("stroke", function(d) {
@@ -304,10 +305,13 @@ enyo.kind({
                     });
 
         // scatter plot
-        var shapes = svg.append("g")
-            .attr("clip-path", "url(#clip)")
-            .selectAll(".dot")
-            .data(function(d) { return d.values; })
+        this.scatter = svg.append("g")
+            .attr("class", "scatter")
+            .attr("clip-path", "url(#clip)");
+
+        var shapes =
+            this.scatter.selectAll(".dot")
+            .data(function(d) { return d.values; }, function(d) {return d.index;})
             .enter();
 
         // events
@@ -347,18 +351,185 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide);
+
+        this.svg = svg;
+        this.x = x;
+        this.yList = yList;
+        this.colorList = colorList;
+    },
+
+    updatePlot: function() {
+        d3.selectAll('.dot')
+           .data(this.filteredData, function(d) {return d.index;})
+            .exit()
+            .transition()
+            .delay(0)
+            .remove();
+
+        d3.selectAll('.line')
+           .data(this.filteredData, function(d) {
+                return d.obj;})
+            .exit()
+            .transition()
+            .delay(0)
+            .remove();
+
+    },
+
+    clearFilter: function() {
+        var svg = this.svg;
+        var x = this.x;
+        var yList = this.yList;
+        var colorList = this.colorList;
+
+        this.filteredData = this.data;
+
+        this.scatter
+            .data(this.classData, function(d) {return d.class_index;})
+
+        var shapes = this.scatter.selectAll('.scatter .dot')
+            .data(function(d) {return d.values;}, function(d) { return d.index})
+            .enter();
+
+        // events
+        shapes.append("circle")
+            .filter(function(d){ return d.type == "event"; })
+            .attr("class", "dot")
+            .attr("r", 5)
+            .attr("cx", function(d) {
+                return x(d.index); })
+            .attr("cy", function(d) { return yList[d.class_index](d.method); })
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+
+                .on("mouseover", enyo.bind(this, function(d) {
+                    if(this.tooltipListener != undefined)
+                        this.tooltipListener(d);
+                    }))
+                .on("click", enyo.bind(this, "filter"));
+
+
+        // entry
+        shapes.append("rect")
+            .filter(function(d){ return d.type == "entry"; })
+            .attr("class", "dot")
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+
+                .on("mouseover", enyo.bind(this, function(d) {
+                    if(this.tooltipListener != undefined)
+                        this.tooltipListener(d);
+                    }))
+                .on("click", enyo.bind(this, "filter"));
+
+
+        // exit
+        shapes.append("rect")
+            .filter(function(d){ return d.type == "exit"; })
+            .attr("class", "dot")
+            .attr("transform", function(d) { return "rotate(45 "
+                + Math.round(x(d.index) - 5) + " "
+                + Math.round(yList[d.class_index](d.method) - 5) + ")"})
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+
+                .on("mouseover", enyo.bind(this, function(d) {
+                    if(this.tooltipListener != undefined)
+                        this.tooltipListener(d);
+                    }))
+                .on("click", enyo.bind(this, "filter"));
+
+        // lines
+        var line = d3.svg.line()
+            .interpolate("step-after")
+            .x(function(d) { return x(d.index); })
+            .y(function(d) { return yList[d.class_index](d.method); });
+
+        var objects = function(d, index) {
+            return colorList[index].domain().map(function(obj) {
+                return {
+                    obj: obj,
+                    class_index : index,
+                    values: d.values.filter(function(e) {
+                    return e.obj == obj;
+                    })
+                };
+            });
+        };
+
+        this.line
+            .data(this.classData, function(d) {return d.class_index;});
+            //.data(objects, function(d) {return d.obj});
+
+        var object =
+            this.line.selectAll(".object .line")
+            .data(objects, function(d) {return d.obj})
+            .enter();
+
+        object.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(d.values); })
+            .style("stroke", function(d) {
+                    return colorList[d.class_index](d.obj);
+                    });
+
+        // this.updatePlot();
     },
 
     filter: function(entry) {
         var filteredData = [];
         var me = this;
         this.data.forEach(function(e) {
-            if(me.eventIsMemberOf(e, entry)) {
-                filteredData.push(e);
+            if(e.type != "link") {
+                if(me.eventIsChildOf(e, entry)) {
+                    filteredData.push(e);
+                }
+                else if(me.eventIsParentOf(e, entry)) {
+                    filteredData.push(e);
+                }
             }
         });
 
         this.filteredData = filteredData;
+        this.updatePlot();
+    },
+
+    eventIsChildOf: function(event, obj) {
+        if(event.obj == obj.obj)
+            return true;
+
+        for(index in this.childList) {
+            // there is a parent for the current event
+            if(this.childList[index].parent.obj == event.obj) {
+                if(this.childList[index].child.obj == obj.obj)
+                    return true;
+                if(this.eventIsChildOf(this.childList[index].child, obj) == true)
+                    return true;
+            }
+        }
+        return false;
+    },
+
+    eventIsParentOf: function(event, obj) {
+        if(event.obj == obj.obj)
+            return true;
+
+        for(index in this.childList) {
+            // there is a child for the current event
+            if(this.childList[index].child.obj == event.obj) {
+                if(this.childList[index].parent.obj == obj.obj)
+                    return true;
+                if(this.eventIsParentOf(this.childList[index].parent, obj) == true)
+                    return true;
+            }
+        }
+        return false;
     }
+
 
 });

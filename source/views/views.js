@@ -13,7 +13,8 @@ enyo.kind({
             {name: "errorPopup", kind: "onyx.Popup", centered: true, floating: true, classes:"onyx-sample-popup", style: "padding: 10px;"},
             {kind:"enyo.FileInputDecorator", onSelect:"customSelected", components:[
                 {kind: "onyx.IconButton", src:"assets/open.png"}
-            ]}
+            ]},
+			{kind:"onyx.Button", content: "Clear Filter", ontap:"clearFilterTapped"}
         ]},
 		{
 			kind: 'FittableColumns', fit: true, components: [
@@ -48,6 +49,10 @@ enyo.kind({
 
         this.$.plot.setData(data);
         this.$.plot.plot();
-    }
+    },
+
+	clearFilterTapped: function(inSender, inEvent) {
+		this.$.plot.clearFilter();
+	}
 
 });
