@@ -92,7 +92,7 @@ enyo.kind({
         var marginContext = {top: 10, right: 20, bottom: 10, left: 120};
         var width = this.container.node.offsetWidth - margin.left - margin.right;
         var height = this.container.node.offsetHeight - margin.top - margin.bottom;
-        var contextHeight = 40;
+        var contextHeight = 20;
 
         var x = d3.scale.linear()
             .range([0, width]);
@@ -121,12 +121,12 @@ enyo.kind({
                 .call(axis);
         };
 
+        // tooltip
         tip = d3.tip().attr('class', 'd3-tip')
             .render( enyo.bind(this, function(node, d) {
                 this.tooltipView.setTo(d);
                 this.tooltipView.renderInto(node);
-            })
-            );
+            }));
 
         tip.offset(function(width) {
             return function(d) {
@@ -138,12 +138,6 @@ enyo.kind({
                     return this.getBoundingClientRect().left > width / 2 ? "w" : "e";
                 }
             }(width));
-
-
-        this.brush = d3.svg.brush()
-            .x(x2)
-            .on("brush", enyo.bind(this, "onBrushed"));
-
 
         // data
         data = this.data;
@@ -188,23 +182,27 @@ enyo.kind({
         });
 
         // context
-        var context = d3.select("#" + this.$.context.id ).append("svg")
+        this.brush = d3.svg.brush()
+            .x(x2)
+            .on("brush", enyo.bind(this, "onBrushed"));
+
+        var contextSvgNode = d3.select("#" + this.$.context.id ).append("svg")
             .attr("width", width + marginContext.left + marginContext.right)
             .attr("height", contextHeight + marginContext.top + marginContext.bottom)
             .append("g")
                 .attr("class", "context")
                 .attr("transform", "translate(" + marginContext.left + "," + marginContext.top + ")");
 
-        context.append("rect")
-            .attr("class", "grid-background")
+        contextSvgNode.append("rect")
+            .attr("class", "graph-context")
             .attr("width", width)
             .attr("height", contextHeight);
 
-        var gBrush = context.append("g")
+        var brushNode = contextSvgNode.append("g")
             .attr("class", "brush")
             .call(this.brush);
 
-        gBrush.selectAll("rect")
+        brushNode.selectAll("rect")
             .attr("height", contextHeight);
 
         //plots containers
