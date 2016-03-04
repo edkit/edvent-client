@@ -20,8 +20,13 @@ enyo.kind({
 			{name:"type", content: "", style: "padding: 3px;"}
 		]},
         {kind: "onyx.Groupbox", components: [
-			{kind: "onyx.GroupboxHeader", content: "Attributes"},
-            {name:"keys", components: [
+			{kind: "onyx.GroupboxHeader", content: "Input"},
+            {name:"inputKeys", components: [
+            ]},
+		]},
+		{kind: "onyx.Groupbox", components: [
+			{kind: "onyx.GroupboxHeader", content: "Output"},
+            {name:"outputKeys", components: [
             ]},
 		]},
 	],
@@ -36,10 +41,16 @@ enyo.kind({
         this.$.object.setContent(entry.obj);
 		this.$.type.setContent(entry.type);
 
-		this.$.keys.destroyComponents();
-        for(key in entry.data) {
-            this.$.keys.createComponent({content: "" + key + ": " + entry.data[key],
+		this.$.inputKeys.destroyComponents();
+		this.$.outputKeys.destroyComponents();
+        for(key in entry.data_in) {
+            this.$.inputKeys.createComponent({content: "" + key + ": " + entry.data_in[key],
 				style: "padding: 3px;"});
         }
+		for(key in entry.data_out) {
+            this.$.outputKeys.createComponent({content: "" + key + ": " + entry.data_out[key],
+				style: "padding: 3px;"});
+        }
+
     }
 });

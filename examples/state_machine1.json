@@ -1,21 +1,21 @@
 [
     { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "link", "data_in" : {"child": "2"} },
-    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data" : {"key1": 3} },
-    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "1", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "2", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm1", "method" : "state5", "obj" : "1", "type" : "event", "data" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data_in" : {"key1": 3} },
+    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "1", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "1", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state2", "obj" : "2", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state3", "obj" : "2", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state4", "obj" : "1", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm1", "method" : "state5", "obj" : "1", "type" : "event", "data_in" : {} },
 
-    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "entry", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "4", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "exit",  "data" : {} },
-    { "t" : "0", "class" : "hsm2", "method" : "state3", "obj" : "4", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "3", "type" : "event", "data" : {} },
-    { "t" : "0", "class" : "hsm2", "method" : "state5", "obj" : "3", "type" : "event", "data" : {} }
+    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "entry", "data_in" : {"speed": 4.0} },
+    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "4", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state1", "obj" : "3", "type" : "exit",  "data_in" : {"speed": 4.0}, "data_out" : {"result": "ok"} },
+    { "t" : "0", "class" : "hsm2", "method" : "state3", "obj" : "4", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state2", "obj" : "3", "type" : "event", "data_in" : {} },
+    { "t" : "0", "class" : "hsm2", "method" : "state5", "obj" : "3", "type" : "event", "data_in" : {} }
 
 ]
