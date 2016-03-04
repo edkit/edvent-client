@@ -253,96 +253,27 @@ enyo.kind({
             .x(function(d) { return x(d.index); })
             .y(function(d) { return yList[d.class_index](d.method); });
 
-        var objects = function(d, index) {
-            return colorList[index].domain().map(function(obj) {
-                return {
-                    obj: obj,
-                    class_index : index,
-                    values: d.values.filter(function(e) {
-                    return e.obj == obj;
-                    })
-                };
-            });
-        };
-
         this.lineGroupNodes = svg.append("g")
             .attr("class", "object")
             .attr("clip-path", "url(#clip)");
-
-        var object =
-            this.lineGroupNodes.selectAll(".object")
-            .data(objects, function(d) {return d.obj})
-            .enter();
-
-        object.append("path")
-            .attr("class", "line")
-            .attr("d", enyo.bind(this, function(d) {
-                return this.generateLine(d.values); }))
-            .style("stroke", function(d) {
-                    return colorList[d.class_index](d.obj);
-                    });
 
         // scatter plot
         this.scatterGroupNodes = svg.append("g")
             .attr("class", "scatter")
             .attr("clip-path", "url(#clip)");
 
-        var shapes =
-            this.scatterGroupNodes.selectAll(".dot")
-            .data(function(d) { return d.values; }, function(d) {return d.index;})
-            .enter();
-
-        // events
-        shapes.append("circle")
-            .filter(function(d){ return d.type == "event"; })
-            .attr("class", "dot")
-            .attr("r", 5)
-            .attr("cx", function(d) { return x(d.index); })
-            .attr("cy", function(d) { return yList[d.class_index](d.method); })
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
-
-        // entry
-        shapes.append("rect")
-            .filter(function(d){ return d.type == "entry"; })
-            .attr("class", "dot")
-            .attr("x", function(d) { return x(d.index) - 5; })
-            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
-
-        // exit
-        shapes.append("rect")
-            .filter(function(d){ return d.type == "exit"; })
-            .attr("class", "dot")
-            .attr("transform", function(d) { return "rotate(45 "
-                + Math.round(x(d.index) - 5) + " "
-                + Math.round(yList[d.class_index](d.method) - 5) + ")"})
-            .attr("x", function(d) { return x(d.index) - 5; })
-            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
-
         this.svgNodes = svg;
         this.yList = yList;
         this.colorList = colorList;
+
+        this.addNewEntries();
     },
 
     clearFilter: function() {
         this.addNewEntries(this.data);
     },
 
-    clearRemoveEntries: function(data) {
+    clearDelEntries: function(data) {
         d3.selectAll('.dot')
            .data(data, function(d) {return d.index;})
             .exit()
@@ -366,6 +297,36 @@ enyo.kind({
         var yList = this.yList;
         var colorList = this.colorList;
 
+        // lines
+        var linePoints = function(d, index) {
+            return colorList[index].domain().map(function(obj) {
+                return {
+                    obj: obj,
+                    class_index : index,
+                    values: d.values.filter(function(e) {
+                    return e.obj == obj;
+                    })
+                };
+            });
+        };
+
+        this.lineGroupNodes
+            .data(this.classData, function(d) {return d.class_index;});
+
+        var lineNodes =
+            this.lineGroupNodes.selectAll(".object .line")
+            .data(linePoints, function(d) {return d.obj})
+            .enter();
+
+        lineNodes.append("path")
+            .attr("class", "line")
+            .attr("d", enyo.bind(this, function(d) {
+                return this.generateLine(d.values); }))
+            .style("stroke", function(d) {
+                    return colorList[d.class_index](d.obj);
+                    });
+
+        // dots
         this.scatterGroupNodes
             .data(this.classData, function(d) {return d.class_index;})
 
@@ -417,8 +378,16 @@ enyo.kind({
             .on('mouseout', tip.hide)
             .on("click", enyo.bind(this, "onLinkFilter"));
 
+    },
+
+    updateEntries: function() {
+        var colorList = this.colorList;
+        var x = this.x;
+        var yList = this.yList;
+        var svg = this.svgNodes;
+
         // lines
-        var objects = function(d, index) {
+        var linePoints = function(d, index) {
             return colorList[index].domain().map(function(obj) {
                 return {
                     obj: obj,
@@ -430,24 +399,34 @@ enyo.kind({
             });
         };
 
-        this.lineGroupNodes
-            .data(this.classData, function(d) {return d.class_index;});
-            //.data(objects, function(d) {return d.obj});
-
-        var object =
-            this.lineGroupNodes.selectAll(".object .line")
-            .data(objects, function(d) {return d.obj})
-            .enter();
-
-        object.append("path")
-            .attr("class", "line")
+        svg.selectAll(".line")
+            .data(linePoints, function(d) {return d.obj})
             .attr("d", enyo.bind(this, function(d) {
-                return this.generateLine(d.values); }))
-            .style("stroke", function(d) {
-                    return colorList[d.class_index](d.obj);
-                    });
+                return this.generateLine(d.values); }));
 
-        // this.updatePlot();
+        // dots
+        var shapes = svg.selectAll(".dot")
+            .data(function(d) {
+                return d.values; },
+                function(d) {
+                    return d.index;})
+
+        shapes.filter(function(d){ return d.type == "event"; })
+            .attr("cx", function(d) { return x(d.index); })
+            .attr("cy", function(d) { return yList[d.class_index](d.method); });
+
+        // entry
+        shapes.filter(function(d){ return d.type == "entry"; })
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; });
+
+        // exit
+        shapes.filter(function(d){ return d.type == "exit"; })
+            .attr("transform", function(d) { return "rotate(45 "
+                + Math.round(x(d.index) - 5) + " "
+                + Math.round(yList[d.class_index](d.method) - 5) + ")"})
+            .attr("x", function(d) { return x(d.index) - 5; })
+            .attr("y", function(d) { return yList[d.class_index](d.method) - 5; });
     },
 
     onBrushed: function() {
@@ -457,34 +436,9 @@ enyo.kind({
         var yList = this.yList;
         var svg = this.svgNodes;
 
-        var objects = function(d, index) {
-            return colorList[index].domain().map(function(obj) {
-                return {
-                    obj: obj,
-                    class_index : index,
-                    values: d.values.filter(function(e) {
-                    return e.obj == obj;
-                    })
-                };
-            });
-        };
-
         x.domain(this.brush.empty() ? this.x2.domain() : this.brush.extent());
-        svg.selectAll(".line")
-            .data(objects, function(d) {return d.obj})
-            .attr("d", enyo.bind(this, function(d) {
-                return this.generateLine(d.values); }));
-
-        svg.selectAll(".dot")
-            .data(function(d) {
-                return d.values; },
-                function(d) {
-                    return d.index;})
-            .attr("r", 5)
-            .attr("cx", function(d) { return x(d.index); })
-            .attr("cy", function(d) { return yList[d.class_index](d.method); })
-            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
         svg.select(".x.axis").call(this.xAxis);
+        this.updateEntries();
     },
 
     onLinkFilter: function(entry) {
@@ -501,7 +455,7 @@ enyo.kind({
             }
         });
 
-        this.clearRemoveEntries(filteredData);
+        this.clearDelEntries(filteredData);
     },
 
     eventIsChildOf: function(event, obj) {
