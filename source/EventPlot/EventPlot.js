@@ -24,12 +24,18 @@ enyo.kind({
     classData: [],
     filteredData: [],
 
-    svg: undefined,
+    svgNodes: undefined, // list of svg node
+    lineGroupNodes: undefined, // list of line groups
     scatter: undefined,
-    line: undefined,
     x: undefined,
+    x2: undefined,
     yList: [],
     colorList: [],
+
+    // d3 functions
+    xAxis: undefined,
+    brush: undefined,
+    generateLine: undefined,
 
     dataChanged: function(inOldValue) {
         var data = this.data;
@@ -98,8 +104,11 @@ enyo.kind({
         var colorList = [];
         var heightList = [];
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
+        this.x = x;
+        this.x2 = x2;
+
+        this.xAxis = d3.svg.axis()
+            .scale(this.x)
             .ticks(0)
             .orient("bottom");
 
@@ -130,39 +139,11 @@ enyo.kind({
                 }
             }(width));
 
-        brushed = function() {
-            var objects = function(d, index) {
-                return colorList[index].domain().map(function(obj) {
-                    return {
-                        obj: obj,
-                        class_index : index,
-                        values: d.values.filter(function(e) {
-                        return e.obj == obj;
-                        })
-                    };
-                });
-            };
 
-            x.domain(brush.empty() ? x2.domain() : brush.extent());
-            svg.selectAll(".line")
-                .data(objects, function(d) {return d.obj})
-                .attr("d", function(d) {
-                      return line(d.values); });
-            svg.selectAll(".dot")
-                .data(function(d) {
-                    return d.values; },
-                    function(d) {
-                        return d.index;})
-                .attr("r", 5)
-                .attr("cx", function(d) { return x(d.index); })
-                .attr("cy", function(d) { return yList[d.class_index](d.method); })
-                .style("fill", function(d) { return colorList[d.class_index](d.obj); })
-            svg.select(".x.axis").call(xAxis);
-        };
-
-        var brush = d3.svg.brush()
+        this.brush = d3.svg.brush()
             .x(x2)
-            .on("brush", brushed);
+            .on("brush", enyo.bind(this, "onBrushed"));
+
 
         // data
         data = this.data;
@@ -221,7 +202,7 @@ enyo.kind({
 
         var gBrush = context.append("g")
             .attr("class", "brush")
-            .call(brush);
+            .call(this.brush);
 
         gBrush.selectAll("rect")
             .attr("height", contextHeight);
@@ -256,7 +237,7 @@ enyo.kind({
             .attr("transform", function(d, index) {
                     return "translate(0," + heightList[index] + ")";
             })
-            .call(xAxis);
+            .call(this.xAxis);
 
         svg.append("g")
             .attr("class", "y axis")
@@ -271,7 +252,7 @@ enyo.kind({
             .text(enyo.bind(this, function(d, index) { return this.classData[index].key;}));
 
         // lines
-        var line = d3.svg.line()
+        this.generateLine = d3.svg.line()
             .interpolate("step-after")
             .x(function(d) { return x(d.index); })
             .y(function(d) { return yList[d.class_index](d.method); });
@@ -288,18 +269,19 @@ enyo.kind({
             });
         };
 
-        this.line = svg.append("g")
+        this.lineGroupNodes = svg.append("g")
             .attr("class", "object")
             .attr("clip-path", "url(#clip)");
 
         var object =
-            this.line.selectAll(".object")
+            this.lineGroupNodes.selectAll(".object")
             .data(objects, function(d) {return d.obj})
             .enter();
 
         object.append("path")
             .attr("class", "line")
-            .attr("d", function(d) { return line(d.values); })
+            .attr("d", enyo.bind(this, function(d) {
+                return this.generateLine(d.values); }))
             .style("stroke", function(d) {
                     return colorList[d.class_index](d.obj);
                     });
@@ -324,7 +306,7 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
         // entry
         shapes.append("rect")
@@ -337,7 +319,7 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
         // exit
         shapes.append("rect")
@@ -353,10 +335,9 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
-        this.svg = svg;
-        this.x = x;
+        this.svgNodes = svg;
         this.yList = yList;
         this.colorList = colorList;
     },
@@ -380,7 +361,7 @@ enyo.kind({
     },
 
     clearFilter: function() {
-        var svg = this.svg;
+        var svg = this.svgNodes;
         var x = this.x;
         var yList = this.yList;
         var colorList = this.colorList;
@@ -405,7 +386,7 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
 
         // entry
@@ -419,7 +400,7 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
 
         // exit
@@ -436,13 +417,47 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "filter"));
+            .on("click", enyo.bind(this, "onLinkFilter"));
 
         // lines
-        var line = d3.svg.line()
-            .interpolate("step-after")
-            .x(function(d) { return x(d.index); })
-            .y(function(d) { return yList[d.class_index](d.method); });
+        var objects = function(d, index) {
+            return colorList[index].domain().map(function(obj) {
+                return {
+                    obj: obj,
+                    class_index : index,
+                    values: d.values.filter(function(e) {
+                    return e.obj == obj;
+                    })
+                };
+            });
+        };
+
+        this.lineGroupNodes
+            .data(this.classData, function(d) {return d.class_index;});
+            //.data(objects, function(d) {return d.obj});
+
+        var object =
+            this.lineGroupNodes.selectAll(".object .line")
+            .data(objects, function(d) {return d.obj})
+            .enter();
+
+        object.append("path")
+            .attr("class", "line")
+            .attr("d", enyo.bind(this, function(d) {
+                return this.generateLine(d.values); }))
+            .style("stroke", function(d) {
+                    return colorList[d.class_index](d.obj);
+                    });
+
+        // this.updatePlot();
+    },
+
+    onBrushed: function() {
+        var colorList = this.colorList;
+        var x = this.x;
+        var x2 = this.x2;
+        var yList = this.yList;
+        var svg = this.svgNodes;
 
         var objects = function(d, index) {
             return colorList[index].domain().map(function(obj) {
@@ -456,26 +471,25 @@ enyo.kind({
             });
         };
 
-        this.line
-            .data(this.classData, function(d) {return d.class_index;});
-            //.data(objects, function(d) {return d.obj});
-
-        var object =
-            this.line.selectAll(".object .line")
+        x.domain(this.brush.empty() ? this.x2.domain() : this.brush.extent());
+        svg.selectAll(".line")
             .data(objects, function(d) {return d.obj})
-            .enter();
+            .attr("d", enyo.bind(this, function(d) {
+                return this.generateLine(d.values); }));
 
-        object.append("path")
-            .attr("class", "line")
-            .attr("d", function(d) { return line(d.values); })
-            .style("stroke", function(d) {
-                    return colorList[d.class_index](d.obj);
-                    });
-
-        // this.updatePlot();
+        svg.selectAll(".dot")
+            .data(function(d) {
+                return d.values; },
+                function(d) {
+                    return d.index;})
+            .attr("r", 5)
+            .attr("cx", function(d) { return x(d.index); })
+            .attr("cy", function(d) { return yList[d.class_index](d.method); })
+            .style("fill", function(d) { return colorList[d.class_index](d.obj); })
+        svg.select(".x.axis").call(this.xAxis);
     },
 
-    filter: function(entry) {
+    onLinkFilter: function(entry) {
         var filteredData = [];
         var me = this;
         this.data.forEach(function(e) {
