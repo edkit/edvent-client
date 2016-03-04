@@ -22,11 +22,10 @@ enyo.kind({
     childList: [],
     eventList: [],
     classData: [],
-    filteredData: [],
 
-    svgNodes: undefined, // list of svg node
-    lineGroupNodes: undefined, // list of line groups
-    scatter: undefined,
+    svgNodes: undefined, // list of svg containers
+    lineGroupNodes: undefined, // list of line containers
+    scatterGroupNodes: undefined, // list of scatter plot containers
     x: undefined,
     x2: undefined,
     yList: [],
@@ -80,7 +79,6 @@ enyo.kind({
 
         this.objectList = objectList;
         this.childList = childList;
-        this.filteredData = this.data;
     },
 
     plot: function() {
@@ -285,12 +283,12 @@ enyo.kind({
                     });
 
         // scatter plot
-        this.scatter = svg.append("g")
+        this.scatterGroupNodes = svg.append("g")
             .attr("class", "scatter")
             .attr("clip-path", "url(#clip)");
 
         var shapes =
-            this.scatter.selectAll(".dot")
+            this.scatterGroupNodes.selectAll(".dot")
             .data(function(d) { return d.values; }, function(d) {return d.index;})
             .enter();
 
@@ -340,16 +338,20 @@ enyo.kind({
         this.colorList = colorList;
     },
 
-    updatePlot: function() {
+    clearFilter: function() {
+        this.addNewEntries(this.data);
+    },
+
+    clearRemoveEntries: function(data) {
         d3.selectAll('.dot')
-           .data(this.filteredData, function(d) {return d.index;})
+           .data(data, function(d) {return d.index;})
             .exit()
             .transition()
             .delay(0)
             .remove();
 
         d3.selectAll('.line')
-           .data(this.filteredData, function(d) {
+           .data(data, function(d) {
                 return d.obj;})
             .exit()
             .transition()
@@ -358,18 +360,16 @@ enyo.kind({
 
     },
 
-    clearFilter: function() {
+    addNewEntries: function() {
         var svg = this.svgNodes;
         var x = this.x;
         var yList = this.yList;
         var colorList = this.colorList;
 
-        this.filteredData = this.data;
-
-        this.scatter
+        this.scatterGroupNodes
             .data(this.classData, function(d) {return d.class_index;})
 
-        var shapes = this.scatter.selectAll('.scatter .dot')
+        var shapes = this.scatterGroupNodes.selectAll('.scatter .dot')
             .data(function(d) {return d.values;}, function(d) { return d.index})
             .enter();
 
@@ -501,8 +501,7 @@ enyo.kind({
             }
         });
 
-        this.filteredData = filteredData;
-        this.updatePlot();
+        this.clearRemoveEntries(filteredData);
     },
 
     eventIsChildOf: function(event, obj) {
