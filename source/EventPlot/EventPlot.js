@@ -266,7 +266,7 @@ enyo.kind({
            .data(data, function(d) {return d.index;})
             .exit()
             .transition()
-            .delay(0)
+            .style("opacity",0)
             .remove();
 
         d3.selectAll('.line')
@@ -274,7 +274,7 @@ enyo.kind({
                 return d.obj;})
             .exit()
             .transition()
-            .delay(0)
+            .style("opacity",0)
             .remove();
 
     },
@@ -312,7 +312,10 @@ enyo.kind({
                 return this.generateLine(d.values); }))
             .style("stroke", function(d) {
                     return colorList[d.class_index](d.obj);
-                    });
+                    })
+            .style("opacity",0)
+            .transition()
+                .style("opacity",1);
 
         // dots
         this.scatterGroupNodes
@@ -333,7 +336,10 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
+            .on("click", enyo.bind(this, "onLinkFilter"))
+            .style("opacity",0)
+            .transition()
+                .style("opacity",1);
 
 
         // entry
@@ -347,7 +353,10 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
+            .on("click", enyo.bind(this, "onLinkFilter"))
+            .style("opacity",0)
+            .transition()
+                .style("opacity",1);
 
 
         // exit
@@ -364,7 +373,10 @@ enyo.kind({
             .style("fill", function(d) { return colorList[d.class_index](d.obj); })
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on("click", enyo.bind(this, "onLinkFilter"));
+            .on("click", enyo.bind(this, "onLinkFilter"))
+            .style("opacity",0)
+            .transition()
+                .style("opacity",1);
 
     },
 
