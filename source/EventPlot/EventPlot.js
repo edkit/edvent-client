@@ -274,7 +274,7 @@ enyo.kind({
 
         d3.selectAll('.line')
            .data(data, function(d) {
-                return d.obj;})
+                return d.obj + d.class_index;})
             .exit()
             .transition()
             .style("opacity",0)
