@@ -68,10 +68,13 @@ enyo.kind({
                     return o.obj === entry.data_in.child;
                 })[0];
 
-                childList.push({
-                    "parent": obj,
-                    "child": childObj
-                });
+                /* child can be NULL if no event was triggered on it */
+                if(childObj != undefined) {
+                    childList.push({
+                        "parent": obj,
+                        "child": childObj
+                    });
+                }
             }
         });
 
